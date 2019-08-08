@@ -18,7 +18,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Logger logger = LoggerFactory.getLogger(Main.class);
-        logger.info("Hello World");
         Request request = new Request();
         Gson gson = new Gson();
         String gameStartUrl = "https://dragonsofmugloar.com/api/v2/game/start";
@@ -27,44 +26,8 @@ public class Main {
 
 
         while (game.getLives() > 0) {
-            String messagesUrl = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/messages";
-            String allMessages = request.GETRequest(messagesUrl);
-            Type listMessages = new TypeToken<ArrayList<Message>>() {
-            }.getType();
-            List<Message> messages = new Gson().fromJson(allMessages, listMessages);
-
-            int countOfTurnsPerMessages = 1;
-            for (Message ad : messages) {
-                if (countOfTurnsPerMessages <= ad.getExpiresIn() && (ad.getProbability().equals("Walk in the park") ||
-                        ad.getProbability().equals("Piece of cake") ||
-                        ad.getProbability().equals("Sure thing") )) {
-                    String messageResponse = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/solve/" + ad.getAdId();
-                    String solveResponse = request.POSTRequest(messageResponse);
-                    SolvedMessage responseForSolveMessage = gson.fromJson(solveResponse, SolvedMessage.class);
-                    if (responseForSolveMessage.getLives() > 0) {
-                        setNewGameStatistics(game, responseForSolveMessage);
-                    } else {
-                        setNewGameStatistics(game, responseForSolveMessage);
-                        break;
-                    }
-                    countOfTurnsPerMessages++;
-                }
-            }
-            if (countOfTurnsPerMessages == 1) {
-                for (int i = 0; i < 1; i++) {
-                    String messageResponse = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/solve/" + messages.get(i).getAdId();
-                    String solveResponse = request.POSTRequest(messageResponse);
-                    SolvedMessage responseForSolveMessage = gson.fromJson(solveResponse, SolvedMessage.class);
-                    logger.debug(responseForSolveMessage.toString());
-                    if (responseForSolveMessage.getLives() > 0) {
-                        setNewGameStatistics(game, responseForSolveMessage);
-                    } else {
-                        setNewGameStatistics(game, responseForSolveMessage);
-                        break;
-                    }
-                    countOfTurnsPerMessages++;
-                }
-            }
+            SolvingMessages solvingMessages = new SolvingMessages();
+            solvingMessages.start(game);
 
             if (game.getLives() == 0) break;
 
@@ -75,14 +38,4 @@ public class Main {
         logger.info(game.toString());
 
     }
-
-    private static void setNewGameStatistics(Game game, SolvedMessage responseForSolveMessage) {
-        game.setGold(responseForSolveMessage.getGold());
-        game.setLives(responseForSolveMessage.getLives());
-        game.setScore(responseForSolveMessage.getScore());
-        game.setHighScore(responseForSolveMessage.getHighScore());
-        game.setTurn(responseForSolveMessage.getTurn());
-    }
-
-
 }

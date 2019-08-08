@@ -13,9 +13,9 @@ public class Shopping {
     Gson gson = new Gson();
 
     public void start(Game game) throws IOException {
-        List<Item> items = getItems(game.getGameId());
+        List<Item> itemsPossibleToPurchase = getItems(game.getGameId());
 
-        for (Item item : items) {
+        for (Item item : itemsPossibleToPurchase) {
             boolean isEnoughGoldForPurchase = item.getCost() < game.getGold();
 
             if (isEnoughGoldForPurchase) {
