@@ -68,22 +68,8 @@ public class Main {
 
             if (game.getLives() == 0) break;
 
-            String shopUrl = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/shop";
-            String allItemsInShop = request.GETRequest(shopUrl);
-            Type listItems = new TypeToken<ArrayList<Item>>() {
-            }.getType();
-            List<Item> items = new Gson().fromJson(allItemsInShop, listItems);
-
-            for (Item item : items) {
-                if (item.getCost() < game.getGold()) {
-                    String shopItemUrl = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/shop/buy/" + item.getId();
-                    String purchaseResponse = request.POSTRequest(shopItemUrl);
-                    PurchasedItem purchasedItem = gson.fromJson(purchaseResponse, PurchasedItem.class);
-                    game.setGold(purchasedItem.getGold());
-                    game.setLives(purchasedItem.getLives());
-                    game.setLevel(purchasedItem.getLevel());
-                }
-            }
+            Shopping shopping = new Shopping();
+            shopping.start(game);
         }
 
         logger.info(game.toString());
