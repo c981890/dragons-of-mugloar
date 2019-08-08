@@ -19,14 +19,22 @@ public class Shopping {
             boolean isEnoughGoldForPurchase = item.getCost() < game.getGold();
 
             if (isEnoughGoldForPurchase) {
-                String shopItemUrl = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/shop/buy/" + item.getId();
-                String purchaseResponse = request.POSTRequest(shopItemUrl);
-                PurchasedItem purchasedItem = gson.fromJson(purchaseResponse, PurchasedItem.class);
-                game.setGold(purchasedItem.getGold());
-                game.setLives(purchasedItem.getLives());
-                game.setLevel(purchasedItem.getLevel());
+                PurchasedItem purchasedItem = getPurchasedItem(game.getGameId(), item.getId());
+                setNewGameStatistics(game, purchasedItem);
             }
         }
+    }
+
+    private void setNewGameStatistics(Game game, PurchasedItem purchasedItem) {
+        game.setGold(purchasedItem.getGold());
+        game.setLives(purchasedItem.getLives());
+        game.setLevel(purchasedItem.getLevel());
+    }
+
+    private PurchasedItem getPurchasedItem(String gameId, String itemId) throws IOException {
+        String shopItemUrl = "https://dragonsofmugloar.com/api/v2/" + gameId + "/shop/buy/" + itemId;
+        String purchaseResponse = request.POSTRequest(shopItemUrl);
+        return gson.fromJson(purchaseResponse, PurchasedItem.class);
     }
 
     private List<Item> getItems(String gameId) throws IOException {
