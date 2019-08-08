@@ -17,34 +17,33 @@ public class SolvingMessages {
 
     public void start(Game game) throws IOException {
 
-        String messagesUrl = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/messages";
-        String allMessages = request.GETRequest(messagesUrl);
-        Type listMessages = new TypeToken<ArrayList<Message>>() {
-        }.getType();
-        List<Message> messages = new Gson().fromJson(allMessages, listMessages);
+        List<Message> allMessagesForSolving = getMessages(game.getGameId());
 
         int countOfTurnsPerMessages = 1;
-        for (Message ad : messages) {
-            if (countOfTurnsPerMessages <= ad.getExpiresIn() && (ad.getProbability().equals("Walk in the park") ||
+        for (Message ad : allMessagesForSolving) {
+            boolean isMessageSolvingProbabilityAcceptable =
+                    countOfTurnsPerMessages <= ad.getExpiresIn() &&
+                    (ad.getProbability().equals("Walk in the park") ||
                     ad.getProbability().equals("Piece of cake") ||
-                    ad.getProbability().equals("Sure thing"))) {
-                String messageResponse = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/solve/" + ad.getAdId();
-                String solveResponse = request.POSTRequest(messageResponse);
-                SolvedMessage responseForSolveMessage = gson.fromJson(solveResponse, SolvedMessage.class);
-                if (responseForSolveMessage.getLives() > 0) {
-                    setNewGameStatistics(game, responseForSolveMessage);
+                    ad.getProbability().equals("Sure thing"));
+
+            if (isMessageSolvingProbabilityAcceptable) {
+                SolvedMessage solvedMessage = getSolvedMessage(game.getGameId(), ad.getAdId());
+
+                if (solvedMessage.getLives() > 0) {
+                    setNewGameStatistics(game, solvedMessage);
                 } else {
-                    setNewGameStatistics(game, responseForSolveMessage);
+                    setNewGameStatistics(game, solvedMessage);
                     break;
                 }
                 countOfTurnsPerMessages++;
             }
         }
-        if (countOfTurnsPerMessages == 1) {
+        boolean isPreviouslyAnyMessagesSolved = (countOfTurnsPerMessages == 1);
+
+        if (isPreviouslyAnyMessagesSolved) {
             for (int i = 0; i < 1; i++) {
-                String messageResponse = "https://dragonsofmugloar.com/api/v2/" + game.getGameId() + "/solve/" + messages.get(i).getAdId();
-                String solveResponse = request.POSTRequest(messageResponse);
-                SolvedMessage responseForSolveMessage = gson.fromJson(solveResponse, SolvedMessage.class);
+                SolvedMessage responseForSolveMessage = getSolvedMessage(game.getGameId(), allMessagesForSolving.get(i).getAdId());
                 logger.debug(responseForSolveMessage.toString());
                 if (responseForSolveMessage.getLives() > 0) {
                     setNewGameStatistics(game, responseForSolveMessage);
@@ -55,6 +54,20 @@ public class SolvingMessages {
                 countOfTurnsPerMessages++;
             }
         }
+    }
+
+    private SolvedMessage getSolvedMessage(String gameId, String adId) throws IOException {
+        String messageResponse = "https://dragonsofmugloar.com/api/v2/" + gameId + "/solve/" + adId;
+        String solveResponse = request.POSTRequest(messageResponse);
+        return gson.fromJson(solveResponse, SolvedMessage.class);
+    }
+
+    private List<Message> getMessages(String gameId) throws IOException {
+        String messagesUrl = "https://dragonsofmugloar.com/api/v2/" + gameId + "/messages";
+        String allMessages = request.GETRequest(messagesUrl);
+        Type listMessages = new TypeToken<ArrayList<Message>>() {
+        }.getType();
+        return new Gson().fromJson(allMessages, listMessages);
     }
 
     private static void setNewGameStatistics(Game game, SolvedMessage responseForSolveMessage) {
