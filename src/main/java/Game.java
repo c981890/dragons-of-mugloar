@@ -1,4 +1,6 @@
+import com.google.gson.Gson;
 
+import java.io.IOException;
 
 public class Game {
 
@@ -12,6 +14,14 @@ public class Game {
 
     public Game() {
 
+    }
+
+    public Game getGame() throws IOException {
+        Request request = new Request();
+        Gson gson = new Gson();
+        String gameStartUrl = "https://dragonsofmugloar.com/api/v2/game/start";
+        String responseForGameStart = request.POSTRequest(gameStartUrl);
+        return gson.fromJson(responseForGameStart, Game.class);
     }
 
     public String getGameId() {

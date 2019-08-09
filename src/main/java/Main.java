@@ -1,5 +1,3 @@
-
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Logger logger = LoggerFactory.getLogger(Main.class);
-        Game game = getGame();
+        Game game = new Game().getGame();
 
 
         while (game.getLives() > 0) {
@@ -24,14 +22,5 @@ public class Main {
         }
 
         logger.info(game.toString());
-
-    }
-
-    private static Game getGame() throws IOException {
-        Request request = new Request();
-        Gson gson = new Gson();
-        String gameStartUrl = "https://dragonsofmugloar.com/api/v2/game/start";
-        String responseForGameStart = request.POSTRequest(gameStartUrl);
-        return gson.fromJson(responseForGameStart, Game.class);
     }
 }
