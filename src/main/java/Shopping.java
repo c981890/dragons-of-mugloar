@@ -25,19 +25,20 @@ public class Shopping {
         }
     }
 
-    private void setNewGameStatistics(Game game, PurchasedItem purchasedItem) {
+    void setNewGameStatistics(Game game, PurchasedItem purchasedItem) {
         game.setGold(purchasedItem.getGold());
         game.setLives(purchasedItem.getLives());
         game.setLevel(purchasedItem.getLevel());
+        game.setTurn(purchasedItem.getTurn());
     }
 
-    private PurchasedItem getPurchasedItem(String gameId, String itemId) throws IOException {
+    PurchasedItem getPurchasedItem(String gameId, String itemId) throws IOException {
         String shopItemUrl = "https://dragonsofmugloar.com/api/v2/" + gameId + "/shop/buy/" + itemId;
         String purchaseResponse = request.POSTRequest(shopItemUrl);
         return gson.fromJson(purchaseResponse, PurchasedItem.class);
     }
 
-    private List<Item> getItems(String gameId) throws IOException {
+    List<Item> getItems(String gameId) throws IOException {
         String shopUrl = "https://dragonsofmugloar.com/api/v2/" + gameId + "/shop";
         String allItemsInShop = request.GETRequest(shopUrl);
         Type listItems = new TypeToken<ArrayList<Item>>() {

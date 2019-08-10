@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class Request {
 
@@ -28,7 +29,7 @@ public class Request {
 
         StringBuilder response = new StringBuilder();
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream(), StandardCharsets.UTF_8));
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
@@ -37,7 +38,7 @@ public class Request {
             logger.info(response.toString());
         } else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
             InputStream errorStream = postConnection.getErrorStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(errorStream));
+            BufferedReader in = new BufferedReader(new InputStreamReader(errorStream, StandardCharsets.UTF_8));
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
@@ -64,7 +65,7 @@ public class Request {
             in.close();
             logger.info("GET JSON String Result " + responseCode + response.toString());
         } else {
-            logger.info("GET NOT WORKED");
+            logger.info("GET DID NOT WORK");
         }
 
         return response.toString();

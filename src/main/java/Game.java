@@ -36,8 +36,16 @@ public class Game {
         return gold;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
     public int getScore() {
         return score;
+    }
+
+    public int getTurn() {
+        return turn;
     }
 
     public void setLives(int lives) {

@@ -16,6 +16,9 @@ public class PurchasedItem {
         this.turn = turn;
     }
 
+    public PurchasedItem() {
+    }
+
     public int getGold() {
         return gold;
     }
@@ -26,5 +29,9 @@ public class PurchasedItem {
 
     public int getLevel() {
         return level;
+    }
+
+    public int getTurn() {
+        return turn;
     }
 }
