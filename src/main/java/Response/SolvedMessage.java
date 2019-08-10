@@ -12,6 +12,16 @@ public class SolvedMessage {
     public SolvedMessage() {
     }
 
+    public SolvedMessage(boolean success, int lives, int gold, int score, int highScore, int turn, String message) {
+        this.success = success;
+        this.lives = lives;
+        this.gold = gold;
+        this.score = score;
+        this.highScore = highScore;
+        this.turn = turn;
+        this.message = message;
+    }
+
     public int getGold() {
         return gold;
     }

@@ -11,9 +11,9 @@ import java.util.List;
 
 public class SolvingMessages {
 
-    Logger logger = LoggerFactory.getLogger(SolvingMessages.class);
-    Request request = new Request();
-    Gson gson = new Gson();
+    private Logger logger = LoggerFactory.getLogger(SolvingMessages.class);
+    private Request request = new Request();
+    private Gson gson = new Gson();
 
     public void start(Game game) throws IOException {
 
@@ -39,9 +39,9 @@ public class SolvingMessages {
                 countOfTurnsPerMessages++;
             }
         }
-        boolean isPreviouslyAnyMessagesSolved = (countOfTurnsPerMessages == 1);
+        boolean isPreviouslyNoMessagesSolved = (countOfTurnsPerMessages == 1);
 
-        if (isPreviouslyAnyMessagesSolved) {
+        if (isPreviouslyNoMessagesSolved) {
             for (int i = 0; i < 1; i++) {
                 SolvedMessage responseForSolveMessage = getSolvedMessage(game.getGameId(), allMessagesForSolving.get(i).getAdId());
                 logger.debug(responseForSolveMessage.toString());
@@ -56,7 +56,7 @@ public class SolvingMessages {
         }
     }
 
-    private SolvedMessage getSolvedMessage(String gameId, String adId) throws IOException {
+    SolvedMessage getSolvedMessage(String gameId, String adId) throws IOException {
         String messageResponse = "https://dragonsofmugloar.com/api/v2/" + gameId + "/solve/" + adId;
         String solveResponse = request.POSTRequest(messageResponse);
         return gson.fromJson(solveResponse, SolvedMessage.class);
@@ -70,7 +70,7 @@ public class SolvingMessages {
         return new Gson().fromJson(allMessages, listMessages);
     }
 
-    private static void setNewGameStatistics(Game game, SolvedMessage responseForSolveMessage) {
+    void setNewGameStatistics(Game game, SolvedMessage responseForSolveMessage) {
         game.setGold(responseForSolveMessage.getGold());
         game.setLives(responseForSolveMessage.getLives());
         game.setScore(responseForSolveMessage.getScore());

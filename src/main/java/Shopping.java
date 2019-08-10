@@ -9,8 +9,8 @@ import java.util.List;
 
 public class Shopping {
 
-    Request request = new Request();
-    Gson gson = new Gson();
+    private Request request = new Request();
+    private Gson gson = new Gson();
 
     public void start(Game game) throws IOException {
         List<Item> itemsPossibleToPurchase = getItems(game.getGameId());
