@@ -9,6 +9,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.anyString;
@@ -19,6 +20,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ShoppingTest {
 
     private PurchasedItem purchasedItem;
+    private Item item;
+    private List<Item> items;
 
     @InjectMocks
     @Spy
@@ -59,7 +62,13 @@ public class ShoppingTest {
     }
 
     @Test
-    public void getItems() {
-
+    public void getItems() throws IOException {
+        String allItemsInShop = "[{\"id\":\"iron\",\"name\":\"Iron Plating\",\"cost\":300},{\"id\":\"mtrix\",\"name\":\"Book of Megatricks\",\"cost\":300}]";
+        when(request.GETRequest(anyString())).thenReturn(allItemsInShop);
+        items = shopping.getItems("");
+        assertEquals("iron", items.get(0).getId());
+        assertEquals(300, items.get(0).getCost());
+        assertEquals("mtrix", items.get(1).getId());
+        assertEquals(300, items.get(1).getCost());
     }
 }

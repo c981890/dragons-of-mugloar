@@ -62,7 +62,7 @@ public class SolvingMessages {
         return gson.fromJson(solveResponse, SolvedMessage.class);
     }
 
-    private List<Message> getMessages(String gameId) throws IOException {
+    List<Message> getMessages(String gameId) throws IOException {
         String messagesUrl = "https://dragonsofmugloar.com/api/v2/" + gameId + "/messages";
         String allMessages = request.GETRequest(messagesUrl);
         Type listMessages = new TypeToken<ArrayList<Message>>() {
