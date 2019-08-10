@@ -58,4 +58,8 @@ public class ShoppingTest {
         assertEquals(34, purchasedItem.getTurn());
     }
 
+    @Test
+    public void getItems() {
+
+    }
 }
