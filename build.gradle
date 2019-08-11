@@ -1,5 +1,7 @@
+
 plugins {
     id 'java'
+    id 'idea'
 }
 
 group 'bigbank'
@@ -10,6 +12,17 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
 }
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test) {
+        systemProperty "file.encoding", "UTF-8"
+    }
+}
+
 
 dependencies {
 
@@ -24,5 +37,3 @@ dependencies {
     testCompile group: 'org.mockito', name: 'mockito-inline', version: '2.27.0'
 
 }
-
-
