@@ -12,16 +12,13 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ShoppingTest {
 
-    private PurchasedItem purchasedItem;
-    private Item item;
-    private List<Item> items;
+    private Game game = new Game();
 
     @InjectMocks
     @Spy
@@ -38,10 +35,62 @@ public class ShoppingTest {
         initMocks(this);
     }
 
+    @Test
+    public void start_enoughGoldToBuyAllItems() throws IOException {
+        game.setLives(2);
+        game.setGold(600);
+        game.setLevel(2);
+        game.setScore(0);
+        game.setHighScore(0);
+        game.setTurn(3);
+        String allItemsInShop = "[{\"id\":\"iron\",\"name\":\"Iron Plating\",\"cost\":100},{\"id\":\"mtrix\",\"name\":\"Book of Megatricks\",\"cost\":100}]";
+        when(request.GETRequest(anyString())).thenReturn(allItemsInShop);
+        PurchasedItem purchasedItem1 = new PurchasedItem("true", 500, 2, 2, 3);
+        PurchasedItem purchasedItem2 = new PurchasedItem("true", 400, 3, 3, 4);
+        when(shopping.getPurchasedItem(anyString(), anyString())).thenReturn(purchasedItem1);
+        when(shopping.getPurchasedItem(anyString(), anyString())).thenReturn(purchasedItem2);
+        shopping.start(game);
+        verify(shopping, times(2)).setNewGameStatistics(any(), any());
+    }
+
+    @Test
+    public void start_notEnoughGold() throws IOException {
+        game.setLives(2);
+        game.setGold(0);
+        game.setLevel(2);
+        game.setScore(0);
+        game.setHighScore(0);
+        game.setTurn(3);
+        String allItemsInShop = "[{\"id\":\"iron\",\"name\":\"Iron Plating\",\"cost\":100},{\"id\":\"mtrix\",\"name\":\"Book of Megatricks\",\"cost\":100}]";
+        when(request.GETRequest(anyString())).thenReturn(allItemsInShop);
+        PurchasedItem purchasedItem1 = new PurchasedItem("true", 300, 2, 2, 3);
+        PurchasedItem purchasedItem2 = new PurchasedItem("true", 100, 3, 3, 4);
+        when(shopping.getPurchasedItem(anyString(), anyString())).thenReturn(purchasedItem1);
+        when(shopping.getPurchasedItem(anyString(), anyString())).thenReturn(purchasedItem2);
+        shopping.start(game);
+        verify(shopping, times(0)).setNewGameStatistics(any(), any());
+    }
+
+    @Test
+    public void start_purchaseOneItemOfTwo() throws IOException {
+        game.setLives(2);
+        game.setGold(600);
+        game.setLevel(2);
+        game.setScore(0);
+        game.setHighScore(0);
+        game.setTurn(3);
+        String allItemsInShop = "[{\"id\":\"iron\",\"name\":\"Iron Plating\",\"cost\":600},{\"id\":\"mtrix\",\"name\":\"Book of Megatricks\",\"cost\":100}]";
+        when(request.GETRequest(anyString())).thenReturn(allItemsInShop);
+        PurchasedItem purchasedItem1 = new PurchasedItem("true", 0, 2, 2, 3);
+        when(shopping.getPurchasedItem(anyString(), anyString())).thenReturn(purchasedItem1);
+        shopping.start(game);
+        verify(shopping, times(1)).setNewGameStatistics(any(), any());
+    }
+
 
     @Test
     public void setNewGameStatistics() {
-        Game game = new Game();
+
         PurchasedItem purchasedItem = new PurchasedItem("true", 0, 1, 2, 3);
         shopping.setNewGameStatistics(game, purchasedItem);
         assertEquals(0, game.getGold());
@@ -54,7 +103,7 @@ public class ShoppingTest {
     public void getPurchasedItem() throws IOException {
         String purchaseResponse = "{\"shoppingSuccess\":true,\"gold\":28,\"lives\":5,\"level\":5,\"turn\":34}";
         when(request.POSTRequest(anyString())).thenReturn(purchaseResponse);
-        purchasedItem = shopping.getPurchasedItem("", "");
+        PurchasedItem purchasedItem = shopping.getPurchasedItem("", "");
         assertEquals(28, purchasedItem.getGold());
         assertEquals(5, purchasedItem.getLives());
         assertEquals(5, purchasedItem.getLevel());
@@ -65,7 +114,7 @@ public class ShoppingTest {
     public void getItems() throws IOException {
         String allItemsInShop = "[{\"id\":\"iron\",\"name\":\"Iron Plating\",\"cost\":300},{\"id\":\"mtrix\",\"name\":\"Book of Megatricks\",\"cost\":300}]";
         when(request.GETRequest(anyString())).thenReturn(allItemsInShop);
-        items = shopping.getItems("");
+        List<Item> items = shopping.getItems("");
         assertEquals("iron", items.get(0).getId());
         assertEquals(300, items.get(0).getCost());
         assertEquals("mtrix", items.get(1).getId());
