@@ -14,7 +14,7 @@ Solution for [Dragons of Mugloar](https://www.dragonsofmugloar.com) in Java.
 **How to use in IntelliJ IDEA**
 
 * Clone project
-* Import in IntelliJ new project
+* Import in IntelliJ as new project
 * Run Main
 
 
