@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -21,6 +21,7 @@ public class SolvingMessagesTest {
 
     private SolvedMessage solvedMessage;
     private List<Message> messages;
+    private Game game = new Game();
 
     @InjectMocks
     @Spy
@@ -35,6 +36,23 @@ public class SolvingMessagesTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+    }
+
+    @Test
+    public void start_allMessagesAreSolved() throws IOException {
+        game.setLives(3);
+        game.setGold(200);
+        game.setScore(20);
+        game.setTurn(2);
+        String allMessages = "[{\"adId\":\"NTBgSPQ7\",\"message\":\"\",\"reward\":22,\"expiresIn\":1,\"probability\":\"Walk in the park\"},{\"adId\":\"5i5zX5BC\",\"message\":\"\",\"reward\":116,\"expiresIn\":2,\"probability\":\"Piece of cake\"}]";
+        when(request.GETRequest(anyString())).thenReturn(allMessages);
+        SolvedMessage solvedMessage1 = new SolvedMessage(true, 3, 200, 20, 0, 2, "");
+        SolvedMessage solvedMessage2 = new SolvedMessage(true, 3, 200, 20, 0, 2, "");
+        when(solvingMessages.getSolvedMessage(anyString(), anyString())).thenReturn(solvedMessage1);
+        when(solvingMessages.getSolvedMessage(anyString(), anyString())).thenReturn(solvedMessage2);
+        solvingMessages.start(game);
+        verify(solvingMessages, times(2)).setNewGameStatistics(any(), any());
+
     }
 
     @Test
@@ -63,4 +81,5 @@ public class SolvingMessagesTest {
         assertEquals(2, messages.get(1).getExpiresIn());
 
     }
+
 }

@@ -11,17 +11,12 @@ public class Request {
     private Logger logger = LoggerFactory.getLogger(Request.class);
 
     public String POSTRequest(String url) throws IOException {
-
-        // todo Can POST_PARAMS be left empty?
-        final String POST_PARAMS = "";
-
         URL urlForPostRequest = new URL(url);
         HttpURLConnection postConnection = (HttpURLConnection) urlForPostRequest.openConnection();
         postConnection.setRequestMethod("POST");
 
         postConnection.setDoOutput(true);
         OutputStream os = postConnection.getOutputStream();
-        os.write(POST_PARAMS.getBytes());
         os.flush();
         os.close();
 
@@ -65,7 +60,7 @@ public class Request {
             in.close();
             logger.info("GET JSON String Result " + responseCode + response.toString());
         } else {
-            logger.info("GET DID NOT WORK");
+            logger.info("GET JSON DID NOT WORK");
         }
 
         return response.toString();

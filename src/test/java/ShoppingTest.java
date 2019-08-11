@@ -31,7 +31,7 @@ public class ShoppingTest {
     Gson gson = new Gson();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         initMocks(this);
     }
 

@@ -1,6 +1,8 @@
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+
 
 public class Game {
 
@@ -12,15 +14,24 @@ public class Game {
     private int highScore;
     private int turn;
 
+    private Logger logger = LoggerFactory.getLogger(Game.class);
+
     public Game() {
 
     }
 
-    public Game getGame() throws IOException {
+    public Game getGame() {
         Request request = new Request();
         Gson gson = new Gson();
         String gameStartUrl = "https://dragonsofmugloar.com/api/v2/game/start";
-        String responseForGameStart = request.POSTRequest(gameStartUrl);
+        String responseForGameStart = null;
+
+        try {
+            responseForGameStart = request.POSTRequest(gameStartUrl);
+        } catch (Exception e) {
+            logger.debug(e.getMessage());
+        }
+
         return gson.fromJson(responseForGameStart, Game.class);
     }
 
